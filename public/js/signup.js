@@ -15,7 +15,6 @@ async function addUser(event){
             password: userPass
         });
 
-        window.location.href= "login.html";
         console.log("User added");
        
         document.getElementById('name').value = '';
