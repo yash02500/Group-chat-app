@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt= require('jsonwebtoken');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -39,6 +40,49 @@ const addUser = async (req, res, next) => {
 };
 
 
+// Generating jwt token
+const generateToken = (id) =>{
+    return jwt.sign({userId: id}, process.env.JWT_TOKEN);
+};
+
+//User login
+const login = async (req, res, next) => {
+    const { email, password } = req.body;
+    console.log("Login Request received", req.body);
+    if(!email || !password){
+        console.log('Login Values missing');
+        return res.sendStatus(400);
+    }
+
+    try{
+        const user = await User.findOne({ where: { email: email } });
+        if (!user) {
+            console.log('Email not found');
+            return res.status(404).send('Email not found');
+        }
+
+        bcrypt.compare(password, user.password, (err, result)=>{
+            if(err){
+                throw new Error("Something went wrong");
+            }
+            
+            if(result){
+                res.status(200).json({message:"Login successful", token: generateToken(user.id)}); 
+            }
+
+            else{
+                res.status(401).send('Incorrect password');
+            }
+        });
+
+    } catch (error) {
+        console.log(error, JSON.stringify(error))
+        res.status(501).json({error})
+    }
+};
+
+
 module.exports = {
-    addUser
+    addUser,
+    login
 };
