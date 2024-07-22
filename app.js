@@ -28,7 +28,7 @@ sequelize.sync()
  app.listen(port, () => {
   console.log('server is running');
    app.get('/', (req, res, next) => {
-        res.sendFile(path.join(__dirname, "public", "signup.html"));
+        res.sendFile(path.join(__dirname, "public", "login.html"));
     })
   });
  })

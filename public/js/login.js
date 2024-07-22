@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 // User login
 async function login(event) {
     event.preventDefault();
@@ -12,14 +14,31 @@ async function login(event) {
     
         alert(response.data.message);
         console.log("Login success");
+        localStorage.setItem('token', response.data.token);
+        window.location.href="chat.html";
     
     } catch (error) {
-        alert("Wrong email or password");
-        document.body.innerHTML += '<center><h4>Something Went Wrong</h4></center>';
-        console.error(error);
+        if (error.response.status === 404) {
+            alert("User not found");
+            document.body.innerHTML += '<center><h4>Wrong email address please enter correct one</h4></center>';
+            console.error(error);
+        }
+        
+        if(error.response.status === 400){
+                alert("Login values missing!");
+                document.body.innerHTML += '<center><h4>Please enter the login details</h4></center>';
+                console.error(error);
+            }
+
+        else{
+            alert("Wrong email or password");
+            document.body.innerHTML += '<center><h4>Incorrect password please enter correct one</h4></center>';
+            console.error(error);
+        }
     }
 
     // Clear the input fields
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
 };
+
