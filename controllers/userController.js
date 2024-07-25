@@ -41,8 +41,8 @@ const addUser = async (req, res, next) => {
 
 
 // Generating jwt token
-const generateToken = (id) =>{
-    return jwt.sign({userId: id}, process.env.JWT_TOKEN);
+const generateToken = (id, name) =>{
+    return jwt.sign({userId: id, name: name}, process.env.JWT_TOKEN);
 };
 
 //User login
@@ -67,7 +67,7 @@ const login = async (req, res, next) => {
             }
             
             if(result){
-                res.status(200).json({message:"Login successful", token: generateToken(user.id)}); 
+                res.status(200).json({message:"Login successful", token: generateToken(user.id, user.name)}); 
             }
 
             else{

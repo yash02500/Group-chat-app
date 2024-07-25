@@ -1,4 +1,8 @@
-const { response } = require("express");
+const token = localStorage.getItem('token');
+
+if(token){
+    window.location.href="chat.html";
+}
 
 // User login
 async function login(event) {

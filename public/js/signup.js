@@ -1,4 +1,4 @@
-        
+// User signup
 async function addUser(event){
     try{
         event.preventDefault();
@@ -8,14 +8,13 @@ async function addUser(event){
         const userMob = document.getElementById('mobile').value;
         const userPass = document.getElementById('password').value;
 
-        await axios.post('http://localhost:3000/user/signup', {
+        const response = await axios.post('http://localhost:3000/user/signup', {
             name: userName,
             email: userEmail,
             mobile: userMob,
             password: userPass
         });
-
-        console.log("User added");
+        console.log("New User added");
        
         document.getElementById('name').value = '';
         document.getElementById('email').value = '';
