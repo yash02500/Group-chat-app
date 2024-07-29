@@ -1,35 +1,143 @@
+const token = localStorage.getItem("token");
 
-const token = localStorage.getItem('token');
-if(!token){
-    alert('You need to login first');
-    window.location.href ="login.html";
+// parse jwt
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
 }
 
 //Stored parsed jwt into variable
-const decode = parseJwt(token)
+const decode = parseJwt(token);
 
-//user joining chat
-const username= decode.name;
-const joined = document.getElementById('joining');
-const joinedUser = document.createElement('label');
-joinedUser.innerHTML=username+" Joined the chat";
-joined.appendChild(joinedUser);
+// Extracting name from token
+const username = decode.name;
+const uid = decode.userId;
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (!token) {
+    alert("You need to login first");
+    window.location.href = "login.html";
+  }
+
+  showMessages();
+
+  //Socket io connection
+  const socket = io("http://localhost:8000");
+  const form = document.getElementById("send");
+  const message = document.getElementById("message");
+  const messageContainer = document.querySelector(".container");
+
+  const append = (message, position) => {
+    const messageElement = document.createElement("div");
+    messageElement.innerHTML = message;
+    messageElement.classList.add("message");
+    messageElement.classList.add(position);
+    messageContainer.append(messageElement);
+  };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const userMessage = message.value;
+    append(`You: ${userMessage}`, "right");
+    socket.emit("send", userMessage);
+
+    //User message object
+    const saveUserMessage = {
+      message: userMessage,
+    };
+
+    //Sending user messages through api to database
+    try {
+      await axios.post(
+        "http://localhost:3000/user/userMessage",
+        saveUserMessage,
+        { headers: { Authorization: token } }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    message.value = "";
+  });
+
+  // Handling various Socket.io events: emitting new user joins, listening for user joins, message reception, and user departures
+  socket.emit("new-user-joined", username);
+
+  socket.on("user-joined", (name) => {
+    append(`<strong>${name}</strong> joined the chat`, "right");
+  });
+
+  socket.on("receive", (data) => {
+    append(`${data.name}: ${data.message}`, "left");
+  });
+
+  socket.on("left", (name) => {
+    append(`<strong>${name}</strong> left the chat`, "right");
+  });
+});
+
+//Getting user messages
+async function getUserMessages() {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/user/getUserMessages`,
+      { headers: { Authorization: token } }
+    );
+    return response.data.message;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
-// parse jwt
-function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+//Show user messages
+function showMessages() {
+  getUserMessages()
+    .then((data) => {
+      const right = document.getElementById("right");
+      right.innerHTML = "";
 
-    return JSON.parse(jsonPayload);
+      const left = document.getElementById("left");
+      left.innerHTML = "";
+
+      if (data && data.length > 0) {
+        data.forEach((msg) => {
+          if (msg.userId == uid) {
+            const message = document.createElement("div");
+            message.dataset.id = msg.id;
+            message.innerHTML = `
+                  <td>${msg.message}</td>`;
+            right.appendChild(message);
+          } else {
+            const message = document.createElement("div");
+            message.dataset.id = msg.id;
+            message.innerHTML = `
+                  <td>${msg.message}</td>`;
+            left.appendChild(message);
+          }
+        });
+      } else {
+        console.log("User messages missing");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 
 //User Logout
-function logOut(){
-    localStorage.removeItem('token');
-    window.location.href="login.html";
+function logOut() {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
 }
