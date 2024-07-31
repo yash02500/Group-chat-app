@@ -14,12 +14,14 @@ async function addUser(event){
             mobile: userMob,
             password: userPass
         });
-        console.log("New User added");
        
         document.getElementById('name').value = '';
         document.getElementById('email').value = '';
         document.getElementById('mobile').value = '';
         document.getElementById('password').value = '';
+
+        console.log("New User added");
+        window.location.href="login.html";
 
     } catch(error){
         document.body.innerHTML=document.body.innerHTML+'<h4>Something Went Wrong</h4>';

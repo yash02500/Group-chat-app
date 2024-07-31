@@ -49,12 +49,14 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const userMessage = message.value;
-    append(`You: ${userMessage}`, "right");
+    append(`<strong>You</strong><br> ${userMessage}`, "right");
     socket.emit("send", userMessage);
 
     //User message object
     const saveUserMessage = {
       message: userMessage,
+      userId: uid,
+      name: username
     };
 
     //Sending user messages through api to database
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("receive", (data) => {
-    append(`${data.name}: ${data.message}`, "left");
+    append(`<strong>${data.name}</strong><br> ${data.message}`, "left");
   });
 
   socket.on("left", (name) => {
@@ -101,30 +103,62 @@ async function getUserMessages() {
 
 
 //Show user messages
+// function showMessages() {
+//   getUserMessages()
+//     .then((data) => {
+//       const right = document.getElementById("right");
+//       right.innerHTML = "";
+
+//       const left = document.getElementById("left");
+//       left.innerHTML = "";
+
+//       if (data && data.length > 0) {
+//         data.forEach((msg) => {
+//           if (msg.userId == uid) {
+//             const message = document.createElement("div");
+//             message.dataset.id = msg.id;
+//             message.innerHTML = `
+//                   <td>${msg.message}</td>`;
+//             right.appendChild(message);
+//           } else {
+//             const message = document.createElement("div");
+//             message.dataset.id = msg.id;
+//             message.innerHTML = `
+//                   <td>${msg.message}</td>`;
+//             left.appendChild(message);
+//           }
+//         });
+//       } else {
+//         console.log("User messages missing");
+//       }
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// }
+
+
 function showMessages() {
   getUserMessages()
     .then((data) => {
-      const right = document.getElementById("right");
-      right.innerHTML = "";
-
-      const left = document.getElementById("left");
-      left.innerHTML = "";
+      const messageContainer = document.getElementById("message-container");
+      messageContainer.innerHTML = "";
 
       if (data && data.length > 0) {
         data.forEach((msg) => {
-          if (msg.userId == uid) {
-            const message = document.createElement("div");
-            message.dataset.id = msg.id;
-            message.innerHTML = `
-                  <td>${msg.message}</td>`;
-            right.appendChild(message);
+          const messageElement = document.createElement("div");
+          messageElement.dataset.id = msg.id;
+          messageElement.classList.add("message");
+          
+          if (msg.UserId == uid) {
+            messageElement.innerHTML = `<td><strong>You</strong><br>${msg.message}</td>`;
+            messageElement.classList.add("right");
           } else {
-            const message = document.createElement("div");
-            message.dataset.id = msg.id;
-            message.innerHTML = `
-                  <td>${msg.message}</td>`;
-            left.appendChild(message);
+            messageElement.innerHTML = `<td><strong>${msg.name}</strong><br>${msg.message}</td>`;
+            messageElement.classList.add("left");
           }
+
+          messageContainer.appendChild(messageElement);
         });
       } else {
         console.log("User messages missing");

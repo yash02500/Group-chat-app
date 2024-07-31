@@ -2,7 +2,7 @@ const UserMessage = require('../models/userMessages');
 
 //Saving User messages 
 const saveMessage = async (req, res, next) => {
-    const { message } = req.body;
+    const { userId, name, message } = req.body;
     console.log("Request received", req.body);
     if(!message){
         console.log('Values missing');
@@ -11,9 +11,11 @@ const saveMessage = async (req, res, next) => {
 
     try{
         const newMessage = await UserMessage.create({
-            userId: req.user.id,
-            message: message
-        })
+            UserId: userId,
+            name: name,
+            message: message,
+        });
+        
         console.log('Message saved');
         res.status(201).json(newMessage)
 
@@ -23,7 +25,7 @@ const saveMessage = async (req, res, next) => {
     }
 };
 
-//Getting user messages
+//Getting user messages 
 const getUserMessages = async(req, res, next) =>{
     try{
         const userMessage = await UserMessage.findAll();
@@ -32,7 +34,7 @@ const getUserMessages = async(req, res, next) =>{
             return res.status(404).send('Messages not found');
         }
         
-        res.status(200).json({message:userMessage, id: userMessage.userId}); 
+        res.status(200).json({message:userMessage, id: userMessage.UserId, name: userMessage.name}); 
     }
     catch(error){
         console.log(error);

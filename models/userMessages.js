@@ -9,12 +9,12 @@ const Messages= sequelize.define('Messages',{
         allowNull: false,
         primaryKey: true
     },
-    userId:{
-        type: Sequelize.INTEGER,
-        allownull: false
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
     },
     message:{
-        type: Sequelize.STRING,
+        type: Sequelize.STRING, 
         allownull: false,
     }
 

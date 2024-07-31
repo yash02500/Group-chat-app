@@ -21,21 +21,23 @@
 }
 
 .right{
-    background-color: white;
+    background-color: rgb(188, 54, 208);
+    color: white;
     float: right;
     clear: both;
     border: 2px solid;
-    border-radius: 5px;
-    padding: 3px;
+    border-radius: 7px;
+    padding: 10px;
 }
 
 .left{
-    background-color: white;
+    background-color: rgb(86, 79, 79);
+    color: white;
     float: left;
     clear: both;
     border: 2px solid;
-    border-radius: 5px;
-    padding: 3px;
+    border-radius: 7px;
+    padding: 10px;
 }
 
 .center {
@@ -56,17 +58,19 @@
 }
 
 #right{
-    background-color: white;
+    background-color: rgb(188, 54, 208);
+    color: white;
     float: right;
     border: 2px solid;
-    border-radius: 5px;
-    padding: 3px;
+    border-radius: 7px;
+    padding: 10px;
 }
 
 #left{
-    background-color: white;
+    background-color: rgb(86, 79, 79);
+    color: white;
     float: left;
     border: 2px solid;
-    border-radius: 5px;
-    padding: 3px;
+    border-radius: 7px;
+    padding: 10px;
 }
