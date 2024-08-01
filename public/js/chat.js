@@ -1,6 +1,5 @@
 const token = localStorage.getItem("token");
 
-// parse jwt
 function parseJwt(token) {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -17,10 +16,7 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-//Stored parsed jwt into variable
 const decode = parseJwt(token);
-
-// Extracting name from token
 const username = decode.name;
 const uid = decode.userId;
 
@@ -32,18 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   showMessages();
 
-  //Socket io connection
   const socket = io("http://localhost:8000");
   const form = document.getElementById("send");
   const message = document.getElementById("message");
-  const messageContainer = document.querySelector(".container");
+  const messageContainer = document.getElementById("message-container");
 
   const append = (message, position) => {
     const messageElement = document.createElement("div");
     messageElement.innerHTML = message;
-    messageElement.classList.add("message");
-    messageElement.classList.add(position);
+    messageElement.classList.add("message", position);
     messageContainer.append(messageElement);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
   };
 
   form.addEventListener("submit", async (e) => {
@@ -52,14 +47,12 @@ document.addEventListener("DOMContentLoaded", function () {
     append(`<strong>You</strong><br> ${userMessage}`, "right");
     socket.emit("send", userMessage);
 
-    //User message object
     const saveUserMessage = {
       message: userMessage,
       userId: uid,
-      name: username
+      name: username,
     };
 
-    //Sending user messages through api to database
     try {
       await axios.post(
         "http://localhost:3000/user/userMessage",
@@ -72,11 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
     message.value = "";
   });
 
-  // Handling various Socket.io events: emitting new user joins, listening for user joins, message reception, and user departures
+
   socket.emit("new-user-joined", username);
 
   socket.on("user-joined", (name) => {
-    append(`<strong>${name}</strong> joined the chat`, "right");
+    append(`<strong>${name}</strong> joined the chat`, "center");
   });
 
   socket.on("receive", (data) => {
@@ -84,11 +77,43 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("left", (name) => {
-    append(`<strong>${name}</strong> left the chat`, "right");
+    append(`<strong>${name}</strong> left the chat`, "center");
   });
+
+  const showCreateGroupFormButton = document.getElementById(
+    "show-create-group-form"
+  );
+  const createGroupForm = document.getElementById("create-group-form");
+  showCreateGroupFormButton.addEventListener("click", () => {
+    createGroupForm.style.display =
+      createGroupForm.style.display === "none" ? "block" : "none";
+  });
+
+  createGroupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const groupName = document.getElementById("group-name").value;
+    
+    const newGroup = {
+      name: groupName,
+      admin: uid,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/groups/create",
+        newGroup,
+        { headers: { Authorization: token } }
+      );
+      loadGroups();
+      createGroupForm.style.display = "none";
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  loadGroups();
 });
 
-//Getting user messages
 async function getUserMessages() {
   try {
     const response = await axios.get(
@@ -101,43 +126,6 @@ async function getUserMessages() {
   }
 }
 
-
-//Show user messages
-// function showMessages() {
-//   getUserMessages()
-//     .then((data) => {
-//       const right = document.getElementById("right");
-//       right.innerHTML = "";
-
-//       const left = document.getElementById("left");
-//       left.innerHTML = "";
-
-//       if (data && data.length > 0) {
-//         data.forEach((msg) => {
-//           if (msg.userId == uid) {
-//             const message = document.createElement("div");
-//             message.dataset.id = msg.id;
-//             message.innerHTML = `
-//                   <td>${msg.message}</td>`;
-//             right.appendChild(message);
-//           } else {
-//             const message = document.createElement("div");
-//             message.dataset.id = msg.id;
-//             message.innerHTML = `
-//                   <td>${msg.message}</td>`;
-//             left.appendChild(message);
-//           }
-//         });
-//       } else {
-//         console.log("User messages missing");
-//       }
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// }
-
-
 function showMessages() {
   getUserMessages()
     .then((data) => {
@@ -149,17 +137,18 @@ function showMessages() {
           const messageElement = document.createElement("div");
           messageElement.dataset.id = msg.id;
           messageElement.classList.add("message");
-          
+
           if (msg.UserId == uid) {
-            messageElement.innerHTML = `<td><strong>You</strong><br>${msg.message}</td>`;
+            messageElement.innerHTML = `<strong>You</strong><br>${msg.message}`;
             messageElement.classList.add("right");
           } else {
-            messageElement.innerHTML = `<td><strong>${msg.name}</strong><br>${msg.message}</td>`;
+            messageElement.innerHTML = `<strong>${msg.name}</strong><br>${msg.message}`;
             messageElement.classList.add("left");
           }
 
           messageContainer.appendChild(messageElement);
         });
+        messageContainer.scrollTop = messageContainer.scrollHeight;
       } else {
         console.log("User messages missing");
       }
@@ -169,9 +158,26 @@ function showMessages() {
     });
 }
 
-
-//User Logout
-function logOut() {
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
+//Loading groups
+async function loadGroups() {
+  try {
+    const response = await axios.get(`http://localhost:3000/groups/getGroups`, {
+      headers: { Authorization: token },
+    });
+    const groups = response.data.groups;
+    const groupList = document.getElementById("group-list");
+    const groupContainer = document.getElementById("group-container");
+    groupList.innerHTML = "";
+    groups.forEach((group) => {
+      const groupItem = document.createElement("li");
+      groupItem.classList.add("list-group-item");
+      groupItem.style.fontSize = "18px";
+      groupItem.innerText = group.name;
+      groupItem.addEventListener("click", () => joinGroup(group.id));
+      groupList.appendChild(groupItem);
+      groupContainer.appendChild(groupList);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }

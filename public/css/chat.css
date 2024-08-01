@@ -1,4 +1,4 @@
-.container{
+/* .container{
     border: 4px solid #575252;
     border-radius: 10px;
     padding: 20px;
@@ -73,4 +73,89 @@
     border: 2px solid;
     border-radius: 7px;
     padding: 10px;
+} */
+
+
+body {
+    background-color: #f8f9fa;
+}
+
+.message-container {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.group-name {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.message {
+    display: inline-block;
+    max-width: 70%;
+    word-wrap: break-word;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+}
+
+.right {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    float: right;
+    clear: both;
+}
+
+.left {
+    background-color: #f8d7da;
+    color: #842029;
+    float: left;
+    clear: both;
+}
+
+.center {
+    text-align: center;
+    margin: 10px 0;
+    font-style: italic;
+    clear: both;
+}
+
+.send-message form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.send-message input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.circle-btn {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border: none;
+    outline: none;
+    color: white; /* Icon color */
+  }
+  
+  .center-icon {
+    font-size: 1.7em; /* Adjust icon size if needed */
+  }  
+
+#logout {
+    border: 1px solid #fff;
 }
