@@ -1,24 +1,26 @@
-const sequelize = require('../util/database');
+
 const Sequelize = require('sequelize');
-const User= require('./user');
+const sequelize = require('../util/database');
 
-const Messages= sequelize.define('Messages',{
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
-    name: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    message:{
-        type: Sequelize.STRING, 
-        allownull: false,
-    }
-
+const UserMessages = sequelize.define('UserMessages', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true
+  },
+  message: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  userId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  },
+  groupId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  }
 });
 
-Messages.belongsTo(User);
-module.exports = Messages;
+module.exports = UserMessages;

@@ -4,6 +4,6 @@ const userAuthentication =require('../middleware/auth');
 const userMsgControll = require('../controllers/userMsgController');
 
 routes.post('/userMessage', userAuthentication.authenticate, userMsgControll.saveMessage);
-routes.get('/getUserMessages', userAuthentication.authenticate, userMsgControll.getUserMessages);
+routes.get('/getUserMessages/:groupId', userAuthentication.authenticate, userMsgControll.getUserMessages);
   
 module.exports = routes;

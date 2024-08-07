@@ -1,96 +1,18 @@
-/* .container{
-    border: 4px solid #575252;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 650px;
-    background-color:papayawhip;
-    margin: auto;
-    height: 75vh;
-    overflow-y: auto;
-}
-
-.message {
-    display: inline-block;
-    max-width: 70%; 
-    word-wrap: break-word;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-}
-
-.right{
-    background-color: rgb(188, 54, 208);
-    color: white;
-    float: right;
-    clear: both;
-    border: 2px solid;
-    border-radius: 7px;
-    padding: 10px;
-}
-
-.left{
-    background-color: rgb(86, 79, 79);
-    color: white;
-    float: left;
-    clear: both;
-    border: 2px solid;
-    border-radius: 7px;
-    padding: 10px;
-}
-
-.center {
-    text-align: center;
-    margin: 10px 0;
-    font-style: italic;
-}
-
-#send{
-    text-align: center;
-}
-
-#message{
-    width:38%;
-    height: 35px;
-    border: 2px solid;
-    border-radius: 3px;
-}
-
-#right{
-    background-color: rgb(188, 54, 208);
-    color: white;
-    float: right;
-    border: 2px solid;
-    border-radius: 7px;
-    padding: 10px;
-}
-
-#left{
-    background-color: rgb(86, 79, 79);
-    color: white;
-    float: left;
-    border: 2px solid;
-    border-radius: 7px;
-    padding: 10px;
-} */
-
-
 body {
     background-color: #f8f9fa;
 }
 
-.message-container {
-    border: 1px solid #ccc;
+#message-container {
+    border: 3px solid #ccc;
     border-radius: 10px;
     padding: 20px;
-    background-color: #fff;
+    background: linear-gradient(135deg, #d8dcf6, #ecf3f4);
     max-height: 60vh;
     overflow-y: auto;
 }
 
 .group-name {
-    border: 1px solid #ccc;
+    border: 3px solid #ccc;
     border-radius: 10px;
 }
 
@@ -120,10 +42,13 @@ body {
 }
 
 .center {
+    position: relative;
     text-align: center;
-    margin: 10px 0;
+    margin-left: 30%;
+    margin-right: 30%;
     font-style: italic;
     clear: both;
+    display: block;
 }
 
 .send-message form {
@@ -137,11 +62,12 @@ body {
 .send-message input {
     flex: 1;
     margin-right: 10px;
+    border: 3px solid #ccc;
 }
 
 .circle-btn {
-    width: 50px; /* Adjust size as needed */
-    height: 50px; /* Adjust size as needed */
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -149,13 +75,17 @@ body {
     padding: 0;
     border: none;
     outline: none;
-    color: white; /* Icon color */
-  }
-  
-  .center-icon {
-    font-size: 1.7em; /* Adjust icon size if needed */
-  }  
+    color: white;
+}
+
+.center-icon {
+    font-size: 1.7em;
+}
 
 #logout {
     border: 1px solid #fff;
+}
+
+#plane {
+    font-size: large;
 }

@@ -24,15 +24,23 @@ const sequelize = require("./util/database");
 
 //Importing models
 const User = require("./models/user");
-const userMessages = require("./models/userMessages");
-const groups = require("./models/groups");
+const UserMessages = require("./models/userMessages");
+const Group = require("./models/groups");
+const GroupMember = require("./models/groupMember");
 
 //defining relation
-User.hasMany(userMessages);
-userMessages.belongsTo(User);
+User.hasMany(UserMessages, { foreignKey: 'userId' });
+UserMessages.belongsTo(User, { foreignKey: 'userId' });
 
-User.hasMany(groups);
-groups.belongsTo(User);
+Group.hasMany(UserMessages, { foreignKey: 'groupId' });
+UserMessages.belongsTo(Group, { foreignKey: 'groupId' });
+
+Group.belongsToMany(User, { through: GroupMember, foreignKey: 'groupId' });
+User.belongsToMany(Group, { through: GroupMember, foreignKey: 'userId' });
+
+GroupMember.belongsTo(User, { foreignKey: 'userId' });
+GroupMember.belongsTo(Group, { foreignKey: 'groupId' });
+
 
 //Parsing URL-encoded bodies (as sent by HTML forms) and using querystring library for parsing(extended:false)
 app.use(bodyParser.urlencoded({ extended: false }));
