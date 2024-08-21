@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {Op} = require("sequelize");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -15,11 +16,26 @@ const addUser = async (req, res, next) => {
   }
 
   try {
-    const existingUser = await User.findOne({ where: { email: email } });
-    if (existingUser) {
-      console.log("Email already exists");
-      return res.status(409).send("Email already exists");
+    const existingUser = await User.findOne({
+    where: {
+      [Op.or]: [
+        { email: email },
+        { mobile: mobile }
+      ]
     }
+  });
+
+  if (existingUser) {
+    if (existingUser.email === email) {
+      console.log("Email already exists");
+      return res.status(409).send({ message: "Email already exists" });
+    }
+    if (existingUser.mobile === mobile) {
+      console.log("Mobile number already exists");
+      return res.status(409).send({ message: "Mobile number already exists" });
+    }
+  }
+
 
     bcrypt.hash(password, 10, async (err, hash) => {
       console.log(err);

@@ -41,11 +41,13 @@ User.belongsToMany(Group, { through: GroupMember, foreignKey: 'userId' });
 GroupMember.belongsTo(User, { foreignKey: 'userId' });
 GroupMember.belongsTo(Group, { foreignKey: 'groupId' });
 
+// Group.hasMany(GroupMember, { as: 'admins', foreignKey: 'groupId' });
+
 
 //Parsing URL-encoded bodies (as sent by HTML forms) and using querystring library for parsing(extended:false)
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit: '10mb', parameterLimit: 10000, extended: true }));
 //Parsing JSON bodies (as sent by API clients)
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
 
 //Serving static files from the "public" directory
 app.use(express.static("public"));

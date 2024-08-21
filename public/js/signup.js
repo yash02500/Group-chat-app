@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 // User signup
 async function addUser(event){
     try{
@@ -23,8 +25,10 @@ async function addUser(event){
         console.log("New User added");
         window.location.href="login.html";
 
-    } catch(error){
-        document.body.innerHTML=document.body.innerHTML+'<h4>Something Went Wrong</h4>';
-        console.log(error);
-    }
-}
+    } catch (error) {
+        if (error.response) {
+          alert(error.response.data.message); // Display the error message from the backend
+        } else {
+          console.error('Something went wrong:', error);
+        }
+    }}      

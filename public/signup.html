@@ -35,7 +35,10 @@
       </div>
       <div class="mb-3">
         <label for="mobile" class="form-label">Mobile Number</label>
-        <input type="tel" class="form-control" id="mobile" placeholder="Enter your mobile number" required>
+        <input type="tel" class="form-control" id="mobile" placeholder="Enter your mobile number" pattern="\d{10}" maxlength="10" required>
+        <div class="invalid-feedback">
+          Mobile number must be exactly 10 digits.
+        </div>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>

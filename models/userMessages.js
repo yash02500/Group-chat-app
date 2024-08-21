@@ -11,7 +11,7 @@ const UserMessages = sequelize.define('UserMessages', {
   },
   message: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   userId: {
     type: Sequelize.INTEGER,
@@ -20,7 +20,15 @@ const UserMessages = sequelize.define('UserMessages', {
   groupId: {
     type: Sequelize.INTEGER,
     allowNull: false
+  },
+  fileUrl: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  fileName: {
+    type: Sequelize.STRING,
+    allowNull: true
   }
 });
-
+ 
 module.exports = UserMessages;

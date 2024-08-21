@@ -1,53 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/chat.css" />
-  </head>
-  <body>
-    <div class="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
-      <h3 class="m-0">GroupTalk</h3>
-      <button id="logout" class="btn btn-outline-danger" onclick="logOut()">
-        <i class="fas fa-sign-out-alt"></i>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/chat.css" />
+</head>
+
+<body>
+  <div class="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
+    <h3 class="m-0">GroupTalk</h3>
+    <button id="logout" class="btn btn-outline-danger" onclick="logOut()">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  </div>
+  <div class="d-flex">
+    <div id="group-container" class="bg-light p-3" style="width: 250px">
+      <h5>Groups</h5>
+      <ul id="group-list" class="list-group mb-3">
+        <!-- Groups will be appended here -->
+      </ul>
+      <button id="show-create-group-form" class="btn btn-secondary mb-3">
+        Create New Group
       </button>
+      <form id="create-group-form" style="display: none">
+        <div class="mb-3">
+          <input type="text" class="form-control" id="group-name" placeholder="Group Name" />
+        </div>
+        <div id="members-container" class="mb-3">
+          <input type="text" class="form-control member-input mb-2" placeholder="Member Mobile Number" />
+        </div>
+        <button id="add-member" class="btn btn-outline-primary mb-3" type="button">
+          Add Member
+        </button>
+        <button class="btn btn-primary" type="submit">Create Group</button>
+      </form>
     </div>
-    <div class="d-flex">
-      <div id="group-container" class="bg-light p-3" style="width: 250px">
-        <h5>Groups</h5>
-        <ul id="group-list" class="list-group mb-3">
-          <!-- Groups will be appended here -->
-        </ul>
-        <button id="show-create-group-form" class="btn btn-secondary mb-3">Create New Group</button>
-        <form id="create-group-form" style="display: none;">
-          <div class="mb-3">
-            <input type="text" class="form-control" id="group-name" placeholder="Group Name" />
-          </div>
-          <div id="members-container" class="mb-3">
-            <input type="text" class="form-control member-input mb-2" placeholder="Member Mobile Number" />
-          </div>
-          <button id="add-member" class="btn btn-outline-primary mb-3" type="button">Add Member</button>
-          <button class="btn btn-primary" type="submit">Create Group</button>
-        </form>
-      </div>
-      <div class="container flex-grow-1 d-none d-md-flex flex-column">
-        <h5 id="current-group-name" class="bg-light p-2 border-bottom">Select a group to start chatting</h5>
-        <div id="message-container" class="flex-grow-1 overflow-auto p-3" style="display: none;"></div>
-        <form id="send" class="d-flex">
-          <input type="text" id="message" class="form-control" placeholder="Type your message here..." style="display: none;"/>
-          <button class="btn btn-primary" id="plane" type="submit" style="display: none;">
-            <i class="fas fa-paper-plane"></i>
-          </button>
-        </form>
-      </div>
+    <div class="container flex-grow-1 d-none d-md-flex flex-column">
+      <h5 id="current-group-name" class="bg-light p-2 border-bottom">
+        Select a group to start chatting
+      </h5>
+      <div id="message-container" class="flex-grow-1 overflow-auto p-3" style="display: none"></div>
+      <form id="send" class="d-flex">
+        <input type="text" id="message" class="form-control" placeholder="Type your message here..."
+          style="display: none" />
+        <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.docx,.xlsx,.jpg" style="display: none"/>
+        <button class="btn" id="fileBtn" type="submit" style="display: none">Send file</button>
+
+        <button class="btn" id="plane" type="submit" style="display: none">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
     </div>
-    <script src="http://localhost:8000/socket.io/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="js/chat.js"></script>
-  </body>
+  </div>
+  <script src="http://localhost:8000/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+
 </html>
