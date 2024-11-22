@@ -1,7 +1,7 @@
 
 // const Sequelize = require('sequelize');
 // const sequelize = require('../util/database');
-
+//
 // const fileUrl = sequelize.define('fileUrl', {
 //   id: {
 //     type: Sequelize.INTEGER,
@@ -16,7 +16,7 @@
 //   userId: {
 //     type: Sequelize.INTEGER,
 //     allowNull: false
-//   },
+//   }, 
 //   groupId: {
 //     type: Sequelize.INTEGER,
 //     allowNull: false

@@ -29,9 +29,14 @@ const getUserMessages = async (req, res) => {
   try {
     const messages = await UserMessages.findAll({
       where: {
-        groupId: req.params.groupId, // Assuming you pass groupId as query parameter
+        groupId: req.params.groupId, 
       },
-      include: [User], // Exclude the password column from the User model
+      include: [
+        {
+          model: User,
+          attributes: { exclude: ["password"] }, // Exclude the password column from the User model
+        },
+      ] 
     });
 
     const groupId = req.params.groupId;
