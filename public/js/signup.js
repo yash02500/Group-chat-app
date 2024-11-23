@@ -1,4 +1,6 @@
-const { response } = require("express");
+
+const ip = '54.221.172.47';
+const port= '3000';
 
 // User signup
 async function addUser(event){
@@ -10,7 +12,7 @@ async function addUser(event){
         const userMob = document.getElementById('mobile').value;
         const userPass = document.getElementById('password').value;
 
-        const response = await axios.post('http://localhost:3000/user/signup', {
+        const response = await axios.post(`http://${ip}:${port}/user/signup`, {
             name: userName,
             email: userEmail,
             mobile: userMob,

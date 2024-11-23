@@ -4,6 +4,9 @@ if(token){
     window.location.href="chat.html";
 }
 
+const ip = '54.221.172.47';
+const port= '3000';
+
 // User login
 async function login(event) {
     event.preventDefault();
@@ -11,7 +14,7 @@ async function login(event) {
     const userPass = document.getElementById('password').value;
 
     try {
-        const response = await axios.post('http://localhost:3000/user/login', {
+        const response = await axios.post(`http://${ip}:${port}/user/login`, {
             email: userEmail,
             password: userPass
         });

@@ -5,6 +5,9 @@ if (!token) {
   window.location.href = "login.html";
 }
 
+const ip = '54.221.172.47';
+const port= '3000';
+
 // Function for parsing jwt
 function parseJwt(token) {
   var base64Url = token.split(".")[1];
@@ -66,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/user/upload",
+          `http://${ip}:${port}/user/upload`,
           fileData,
           {
             headers: {
@@ -117,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       await axios.post(
-        "http://localhost:3000/user/userMessage",
+        `http://${ip}:${port}/user/userMessage`,
         saveUserMessage,
         { headers: { Authorization: token } }
       );
@@ -178,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/groups/create",
+        `http://${ip}:${port}/groups/create`,
         newGroup,
         {
           headers: { Authorization: token },
@@ -203,7 +206,7 @@ let groupAdmin = null;
 async function getUserMessages(groupId) {
   try {
     const response = await axios.get(
-      `http://localhost:3000/user/getUserMessages/${groupId}`,
+      `http://${ip}:${port}/user/getUserMessages/${groupId}`,
       { headers: { Authorization: token } }
     );
     groupAdmin = response.data.admin.adminId;
@@ -277,7 +280,7 @@ function showMessages(groupId) {
 // Loading groups
 async function loadGroups() {
   try {
-    const response = await axios.get(`http://localhost:3000/groups/getGroups`, {
+    const response = await axios.get(`http://${ip}:${port}/groups/getGroups`, {
       headers: { Authorization: token },
     });
     const groups = response.data.groups;
@@ -384,7 +387,7 @@ function groupUsers(groupId) {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/groups/addMember`,
+        `http://${ip}:${port}/groups/addMember`,
         { groupId, mobile: newMemberMobile },
         { headers: { Authorization: token } }
       );
@@ -431,7 +434,7 @@ function groupUsers(groupId) {
     try {
       // Fetch group members
       const response = await axios.get(
-        `http://localhost:3000/groups/getGroups/${groupId}`,
+        `http://${ip}:${port}/groups/getGroups/${groupId}`,
         { headers: { Authorization: token } }
       );
       const groupMembers = response.data.GroupMembers;
@@ -458,7 +461,7 @@ function groupUsers(groupId) {
           ) {
             try {
               await axios.delete(
-                `http://localhost:3000/groups/removeUser/${groupId}/${userToRemove}`,
+                `http://${ip}:${port}/groups/removeUser/${groupId}/${userToRemove}`,
                 { headers: { Authorization: token } }
               );
               listItem.remove(); // Remove the user from the list
@@ -500,7 +503,7 @@ function groupUsers(groupId) {
           ) {
             try {
               await axios.post(
-                `http://localhost:3000/groups/makeAdmin/${groupId}/${userToMakeAdmin}`,
+                `http://${ip}:${port}/groups/makeAdmin/${groupId}/${userToMakeAdmin}`,
                 { headers: { Authorization: token } }
               );
             } catch (error) {
