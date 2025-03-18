@@ -1,5 +1,5 @@
 
-const ip = '54.221.172.47';
+const ip = 'localhost';
 const port= '3000';
 
 // User signup

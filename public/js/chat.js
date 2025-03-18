@@ -5,7 +5,7 @@ if (!token) {
   window.location.href = "login.html";
 }
 
-const ip = '54.221.172.47';
+const ip = 'localhost';
 const port= '3000';
 
 // Function for parsing jwt
@@ -28,13 +28,64 @@ function parseJwt(token) {
 //Parsing jwt token
 const decode = parseJwt(token);
 
-//Extracting username adn id from logged user
+//Extracting username and id from logged user
 const username = decode.name;
 const uid = decode.userId;
 
 let currentGroupId = null;
+let isMobileView = window.innerWidth < 768;
+
+// Function to check if we're in mobile view
+function checkMobileView() {
+  isMobileView = window.innerWidth < 768;
+  return isMobileView;
+}
+
+// Function to switch to chat view on mobile
+function showChatView() {
+  if (checkMobileView()) {
+    document.body.classList.add('mobile-chat-active');
+    document.body.classList.remove('mobile-group-active');
+    document.getElementById('back-button').style.display = 'block';
+  }
+}
+
+// Function to switch to group list view on mobile
+function showGroupView() {
+  if (checkMobileView()) {
+    document.body.classList.add('mobile-group-active');
+    document.body.classList.remove('mobile-chat-active');
+    document.getElementById('back-button').style.display = 'none';
+  }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Set initial view state
+  if (checkMobileView()) {
+    showGroupView();
+  }
+
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    if (!checkMobileView()) {
+      // Reset classes when switching to desktop view
+      document.body.classList.remove('mobile-chat-active', 'mobile-group-active');
+      document.getElementById('back-button').style.display = 'none';
+    } else if (!currentGroupId) {
+      // If no group is selected, show group view
+      showGroupView();
+    } else {
+      // If a group is selected, show chat view
+      showChatView();
+    }
+  });
+
+  // Back button functionality
+  const backButton = document.getElementById('back-button');
+  backButton.addEventListener('click', function() {
+    showGroupView();
+  });
+
   loadGroups();
 
   const socket = io("http://localhost:8000");
@@ -42,6 +93,64 @@ document.addEventListener("DOMContentLoaded", function () {
   const message = document.getElementById("message");
   const messageContainer = document.getElementById("message-container");
   const fileInput = document.getElementById("fileInput");
+  const fileIconLabel = document.querySelector(".file-icon-label");
+  const messageInputContainer = document.querySelector(".message-input-container");
+  const sendButton = document.getElementById("plane");
+  let fileSelected = false;
+
+  // Show file name when a file is selected
+  fileInput.addEventListener("change", function() {
+    if (this.files.length > 0) {
+      fileSelected = true;
+      const fileName = this.files[0].name;
+      // Update send button to indicate file is ready to send
+      sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+      sendButton.title = `Send ${fileName}`;
+      
+      // Add a visual indicator that a file is selected
+      form.classList.add("file-selected");
+      
+      // Show a small preview or filename
+      message.placeholder = `File selected: ${fileName}`;
+    } else {
+      fileSelected = false;
+      sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+      sendButton.title = "Send message";
+      form.classList.remove("file-selected");
+      message.placeholder = "Type your message here...";
+    }
+  });
+
+  // Handle Enter key in message input
+  message.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Add click event for the send button
+  sendButton.addEventListener("click", function() {
+    sendMessage();
+  });
+
+  // Handle file icon click when a file is already selected
+  fileIconLabel.addEventListener("click", function(e) {
+    if (fileSelected) {
+      e.preventDefault();
+      if (confirm("A file is already selected. Do you want to send it now?")) {
+        sendMessage();
+      } else {
+        // Reset file input if user wants to select a different file
+        fileInput.value = "";
+        fileSelected = false;
+        form.classList.remove("file-selected");
+        message.placeholder = "Type your message here...";
+        // Now allow the click to proceed to select a new file
+        setTimeout(() => fileInput.click(), 100);
+      }
+    }
+  });
 
   const append = (message, position) => {
     const messageElement = document.createElement("div");
@@ -51,15 +160,15 @@ document.addEventListener("DOMContentLoaded", function () {
     messageContainer.scrollTop = messageContainer.scrollHeight;
   };
 
-  // Save user message
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // Function to handle sending messages
+  async function sendMessage() {
     if (!currentGroupId) {
       alert("Please select a group");
       return;
     }
-    ///
+    
     const file = fileInput.files[0];
+    const userMessage = message.value;
 
     if (file) {
       // Upload file to server or cloud storage
@@ -86,63 +195,56 @@ document.addEventListener("DOMContentLoaded", function () {
           fileName: fileName,
           name: username
         });
-        window.location.reload();
+        append(`<strong>You</strong><br> <a href="${fileUrl}" target="_blank">${fileName}</a>`, "right");
+        
+        // Reset file input
+        fileInput.value = "";
+        fileSelected = false;
+        form.classList.remove("file-selected");
+        message.placeholder = "Type your message here...";
 
       } catch (error) {
         console.log(error);
       }
     }
 
-    socket.on("receive", (data) => {
-      const { fileUrl, name } = data;
-      append(`<strong>${name}</strong><br> ${fileUrl}`, "left");
-      if (fileUrl) {
-        // Display file URL or attachment
-        const fileElement = document.createElement("a");
-        fileElement.href = fileUrl;
-        fileElement.innerText = "View File";
-        fileElement.style.display = "block";
-        messageContainer.appendChild(fileElement);
+    if (userMessage.trim() !== "") {
+      append(`<strong>You</strong><br> ${userMessage}`, "right");
+      socket.emit("send", {
+        message: userMessage,
+        name: username
+      });
+
+      const saveUserMessage = {
+        message: userMessage,
+        userId: uid,
+        name: username,
+        groupId: currentGroupId,
+      };
+
+      try {
+        await axios.post(
+          `http://${ip}:${port}/user/userMessage`,
+          saveUserMessage,
+          { headers: { Authorization: token } }
+        );
+      } catch (error) {
+        console.log(error);
       }
-    });
-
-    ////
-    const userMessage = message.value;
-    append(`<strong>You</strong><br> ${userMessage}`, "right");
-    socket.emit("send", userMessage);
-
-    const saveUserMessage = {
-      message: userMessage,
-      userId: uid,
-      name: username,
-      groupId: currentGroupId,
-    };
-
-    try {
-      await axios.post(
-        `http://${ip}:${port}/user/userMessage`,
-        saveUserMessage,
-        { headers: { Authorization: token } }
-      );
-    } catch (error) {
-      console.log(error);
     }
+    
     message.value = "";
-  });
+  }
 
   socket.emit("new-user-joined", username);
 
-  // socket.on("user-joined", (name) => {
-  //   append(`<strong>${name}</strong> joined the chat`, "center");
-  // });
-
   socket.on("receive", (data) => {
-    append(`<strong>${data.name}</strong><br> ${data.message}`, "left");
+    if (data.fileUrl) {
+      append(`<strong>${data.name}</strong><br> <a href="${data.fileUrl}" target="_blank">${data.fileName || "File"}</a>`, "left");
+    } else if (data.message) {
+      append(`<strong>${data.name}</strong><br> ${data.message}`, "left");
+    }
   });
-
-  // socket.on("left", (name) => {
-  //   append(`<strong>${name}</strong> left the chat`, "center");
-  // });
 
   // Creating group
   const showCreateGroupFormButton = document.getElementById(
@@ -224,17 +326,13 @@ function showMessages(groupId) {
       const messageContainer = document.getElementById("message-container");
       messageContainer.style.display = "block";
 
-      const message = document.getElementById("message");
-      message.style.display = "block";
+      const messageInputContainer = document.querySelector(".message-input-container");
+      if (messageInputContainer) {
+        messageInputContainer.style.display = "block";
+      }
 
       const plane = document.getElementById("plane");
       plane.style.display = "block";
-
-      const fileInput =document.getElementById('fileInput');
-      fileInput.style.display = "block";
-
-      const fileBtn =document.getElementById('fileBtn');
-      fileBtn.style.display = "block";
 
       messageContainer.innerHTML = "";
       if (data && data.length > 0) {
@@ -253,8 +351,15 @@ function showMessages(groupId) {
           if (msg.fileUrl) {
             const fileLink = document.createElement("a");
             fileLink.href = msg.fileUrl;
-            fileLink.textContent = msg.fileName;
-            fileLink.download = msg.fileName;
+            fileLink.textContent = msg.fileName || "File";
+            fileLink.download = msg.fileName || "File";
+            fileLink.target = "_blank";
+            
+            const sender = document.createElement("strong");
+            sender.textContent = msg.userId == uid ? "You" : msg.User.name;
+            
+            messageElement.appendChild(sender);
+            messageElement.appendChild(document.createElement("br"));
             messageElement.appendChild(fileLink);
           } else {
             // Handle text message display
@@ -273,10 +378,6 @@ function showMessages(groupId) {
     });
 }
 
-
-//Variable to Extract adminId of logged account
-//let loggedAdminId ;
-
 // Loading groups
 async function loadGroups() {
   try {
@@ -288,6 +389,7 @@ async function loadGroups() {
     const groupList = document.getElementById("group-list");
     const groupContainer = document.getElementById("group-container");
     groupList.innerHTML = "";
+    
     groups.forEach((group) => {
       const groupItem = document.createElement("li");
       groupItem.classList.add("list-group-item");
@@ -301,7 +403,6 @@ async function loadGroups() {
         joinGroupChat(group.id, group.name)
       );
       groupList.appendChild(groupItem);
-      groupContainer.appendChild(groupList);
     });
   } catch (error) {
     console.log(error);
@@ -313,17 +414,36 @@ async function joinGroupChat(groupId, groupName) {
   currentGroupId = groupId;
   await getUserMessages(groupId);
 
+  // Switch to chat view on mobile
+  if (checkMobileView()) {
+    showChatView();
+  }
+
   const currentGRoup = document.getElementById("current-group-name");
   currentGRoup.innerText = groupName;
+  
+  // Remove any existing event listeners and reset styles
+  currentGRoup.style.cursor = "default";
+  // Clone the element to remove all event listeners
+  const newElement = currentGRoup.cloneNode(true);
+  currentGRoup.parentNode.replaceChild(newElement, currentGRoup);
+  
+  // Add the expand-on-hover class to the new element
+  newElement.classList.add("expand-on-hover");
 
+  // Only add admin functionality if the current user is the admin of this group
   if (groupAdmin === uid) {
-    currentGRoup.style.cursor = "pointer";
-    currentGRoup.addEventListener("click", groupUsers(currentGroupId));
+    newElement.style.cursor = "pointer";
+    // Create a new modal for this group
+    const modalHandler = createGroupUsersModal(groupId);
+    newElement.addEventListener("click", modalHandler);
   }
+  
   showMessages(groupId);
 }
 
-function groupUsers(groupId) {
+// Create a separate function to create the modal
+function createGroupUsersModal(groupId) {
   // Create a modal element
   const modal = document.createElement("div");
   modal.style.display = "none";
@@ -360,10 +480,10 @@ function groupUsers(groupId) {
   // Append close button to modal content
   modalContent.appendChild(closeButton);
 
-  // Leaderboard title
-  const title = document.createElement("h2");
-  title.innerText = "Group Members";
-  modalContent.appendChild(title);
+  // members list
+  const list = document.createElement("h2");
+  list.innerText = "Group Members";
+  modalContent.appendChild(list);
 
   // Input field and button for adding a new member
   const addMemberDiv = document.createElement("div");
@@ -394,8 +514,8 @@ function groupUsers(groupId) {
 
       if (response.status === 201) {
         alert("Member added successfully!");
-        // Optionally, refresh the member list
-        inputElement.click();
+        // Refresh the member list
+        loadGroupMembers();
       } else {
         alert("Failed to add member.");
       }
@@ -421,16 +541,8 @@ function groupUsers(groupId) {
   // Append modal to document body
   document.body.appendChild(modal);
 
-  // Button to show the members
-  const inputElement = document.getElementById("current-group-name");
-  inputElement.type = "button";
-  inputElement.className = "nav-link";
-  inputElement.value = "Group members";
-  inputElement.style.fontWeight = "bold";
-  inputElement.style.fontSize = "20px";
-  inputElement.onclick = async () => {
-    modal.style.display = "block"; // Show the modal
-
+  // Function to load group members
+  const loadGroupMembers = async () => {
     try {
       // Fetch group members
       const response = await axios.get(
@@ -513,7 +625,6 @@ function groupUsers(groupId) {
           }
         };
 
-        ////
         makeAdminItem.appendChild(makeAdminButton);
 
         // Remove button in dropdown
@@ -541,6 +652,12 @@ function groupUsers(groupId) {
     } catch (error) {
       console.error("Error fetching group members:", error);
     }
+  };
+
+  // Return a function that shows the modal and loads members
+  return function() {
+    modal.style.display = "block";
+    loadGroupMembers();
   };
 }
 

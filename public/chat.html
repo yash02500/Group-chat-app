@@ -17,15 +17,16 @@
       <i class="fas fa-sign-out-alt"></i>
     </button>
   </div>
-  <div class="d-flex">
-    <div id="group-container" class="bg-light p-3" style="width: 250px">
+  <div class="d-flex flex-column flex-md-row">
+    <!-- Sidebar for groups - will be hidden on mobile when in chat view -->
+    <div id="group-container" class="bg-light p-3 sidebar">
       <h5>Groups</h5>
-      <ul id="group-list" class="list-group mb-3">
-        <!-- Groups will be appended here -->
-      </ul>
       <button id="show-create-group-form" class="btn btn-secondary mb-3">
         Create New Group
       </button>
+      <ul id="group-list" class="list-group mb-3">
+        <!-- Groups will be appended here -->
+      </ul>
       <form id="create-group-form" style="display: none">
         <div class="mb-3">
           <input type="text" class="form-control" id="group-name" placeholder="Group Name" />
@@ -39,20 +40,33 @@
         <button class="btn btn-primary" type="submit">Create Group</button>
       </form>
     </div>
-    <div class="container flex-grow-1 d-none d-md-flex flex-column">
-      <h5 id="current-group-name" class="bg-light p-2 border-bottom">
-        Select a group to start chatting
-      </h5>
-      <div id="message-container" class="flex-grow-1 overflow-auto p-3" style="display: none"></div>
-      <form id="send" class="d-flex">
-        <input type="text" id="message" class="form-control" placeholder="Type your message here..."
-          style="display: none" />
-        <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.docx,.xlsx,.jpg" style="display: none"/>
-        <button class="btn" id="fileBtn" type="submit" style="display: none">Send file</button>
-
-        <button class="btn" id="plane" type="submit" style="display: none">
-          <i class="fas fa-paper-plane"></i>
+    
+    <!-- Chat container - will be shown on mobile when a group is selected -->
+    <div id="chat-container" class="container flex-grow-1 d-flex flex-column chat-area">
+      <div class="chat-header bg-light p-2 border-bottom d-flex align-items-center">
+        <button id="back-button" class="btn btn-sm me-2 d-md-none" style="display: none;">
+          <i class="fas fa-arrow-left"></i>
         </button>
+        <div class="flex-grow-1 text-center">
+          <h5 id="current-group-name" class="m-0 d-inline-block">
+            Select a group to start chatting
+          </h5>
+        </div>
+      </div>
+      <div id="message-container" class="flex-grow-1 overflow-auto p-3" style="display: none"></div>
+      <form id="send" class="d-flex message-form">
+        <div class="input-group">
+          <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.docx,.xlsx,.jpg" style="display: none"/>
+          <div class="message-input-container" style="display: none">
+            <label for="fileInput" class="file-icon-label">
+              <i class="fas fa-paperclip"></i>
+            </label>
+            <input type="text" id="message" class="form-control" placeholder="Type your message here..." />
+          </div>
+          <button class="btn send-btn" id="plane" type="button" style="display: none">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -64,3 +78,6 @@
 </body>
 
 </html>
+
+
+

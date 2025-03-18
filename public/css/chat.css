@@ -93,17 +93,148 @@ body {
 
 #plane {
     font-size: large;
-    background-color: rgb(177, 176, 176);
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 0 5px 5px 0;
+}
+
+#plane:hover {
+    background-color: #0b5ed7;
 }
 
 #current-group-name{
-    margin-top: 2%;
+    margin-top: 0;
     font-size: large;
     text-align: center;
+    display: inline-block;
+    background-color: #343a40;
+    color: white;
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-weight: 500;
 }
 
 #message{
-    max-width: 80%;
-    margin-left: 10%;
+    max-width: 100%;
     border: 3px solid #ccc;
+    border-radius: 5px;
+    padding-left: 40px; /* Make space for the paperclip icon */
 }
+
+/* New styles for the message form */
+.message-form {
+    margin: 10px 10%;
+    width: 80%;
+}
+
+.input-group {
+    width: 100%;
+}
+
+.message-input-container {
+    position: relative;
+    flex: 1;
+}
+
+.file-icon-label {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.file-icon-label:hover {
+    color: #0d6efd;
+}
+
+#fileInput {
+    display: none;
+}
+
+.send-btn {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.send-btn:hover {
+    background-color: #0b5ed7;
+    color: white;
+}
+
+/* Style for when a file is selected */
+.file-selected .file-icon-label {
+    color: #0f5132;
+}
+
+/* Responsive styles */
+.sidebar {
+    width: 250px;
+}
+
+.chat-area {
+    height: calc(100vh - 66px);
+}
+
+.chat-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #f8f9fa;
+}
+
+#back-button {
+    font-size: 1.2rem;
+    color: #0d6efd;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+#back-button:hover {
+    color: #0b5ed7;
+}
+
+/* Mobile styles */
+@media (max-width: 767.98px) {
+    #message-container {
+        margin-left: 0;
+        margin-right: 0;
+        max-height: calc(100vh - 180px);
+    }
+    
+    .message-form {
+        margin: 10px 5%;
+        width: 90%;
+    }
+    
+    .sidebar {
+        width: 100%;
+    }
+    
+    /* Hide/show elements based on mobile view state */
+    .mobile-chat-active .sidebar {
+        display: none;
+    }
+    
+    .mobile-group-active .chat-area {
+        display: none !important;
+    }
+    
+    body:not(.mobile-chat-active):not(.mobile-group-active) .sidebar {
+        display: block;
+    }
+    
+    body:not(.mobile-chat-active):not(.mobile-group-active) .chat-area {
+        display: none !important;
+    }
+}
+
+/* Group list styling */
+#group-list {
+    list-style: none;
+    padding: 0;
+}
+
