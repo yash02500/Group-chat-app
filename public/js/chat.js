@@ -239,10 +239,22 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.emit("new-user-joined", username);
 
   socket.on("receive", (data) => {
+
     if (data.fileUrl) {
       append(`<strong>${data.name}</strong><br> <a href="${data.fileUrl}" target="_blank">${data.fileName || "File"}</a>`, "left");
     } else if (data.message) {
       append(`<strong>${data.name}</strong><br> ${data.message}`, "left");
+    }
+  });
+
+
+    // Check if the message itself is an object and try to access its 'message' property
+    const messageContent = typeof data.message === 'object' && data.message !== null ? data.message.message || data.message.text : data.message;
+
+    if (data.fileUrl) {
+      append(`<strong>${data.name}</strong><br> <a href="${data.fileUrl}" target="_blank">${data.fileName || "File"}</a>`, "left");
+    } else if (messageContent) {
+      append(`<strong>${data.name}</strong><br> ${messageContent}`, "left");
     }
   });
 
@@ -299,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Failed to create group. Please try again.");
     }
   });
-});
+
 
 //Extract admin from current group
 let groupAdmin = null;
@@ -412,7 +424,11 @@ async function loadGroups() {
 //Join group chat
 async function joinGroupChat(groupId, groupName) {
   currentGroupId = groupId;
-  await getUserMessages(groupId);
+
+  // Switch to chat view on mobile
+  if (checkMobileView()) {
+    showChatView();
+  }
 
   // Switch to chat view on mobile
   if (checkMobileView()) {
